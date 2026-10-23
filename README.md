@@ -6,6 +6,7 @@ A visual, interactive Product Management study system built from your 55-lecture
 - **Live (public, anyone with the link):** https://pm-master-handbook-varun.netlify.app — Netlify project `pm-master-handbook-varun`. To publish changes: rebuild, then run `netlify deploy --prod --dir html/Interactive-PM-Handbook --site pm-master-handbook-varun --no-build`.
 - **Interactive site:** `html/Interactive-PM-Handbook/index.html` — works offline straight from disk (no server, no API keys).
 - **Entry point listing everything:** `index.html` in this folder.
+- **All links in one file:** [`LINKS.md`](./LINKS.md): live pages and PDFs for every module, plus the resume and case-study portfolio.
 - **PDFs:** `pdf/` — the complete handbook (444 pages, page-numbered contents, 527 bookmarks), 12 module PDFs, and separate PDFs for the Framework Library, Case Studies, Practical Projects and Interview Handbook.
 
 ## What's inside
