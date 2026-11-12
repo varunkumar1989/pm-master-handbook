@@ -1,0 +1,213 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>RCA Practice — Questions</title><link rel="stylesheet" href="file:///C:/Users/varun/Documents/ClaudeProjects/Product-Management-Master-Handbook/_build/assets/style.css"><style>
+.rcaq{break-before:page}.rcaq h2{margin-top:0;border-top:0}
+.notes .line{border-bottom:1px solid #D0D5DD;height:26px}
+.meta-line{color:#475467;font-size:.9rem}
+.canvas{margin:10px 0}
+</style></head><body class="print" data-theme="light"><div class="article"><section class="cover"><div><div class="stripe"></div><h1>RCA Interview Practice — Questions</h1><div class="sub">24 root-cause-analysis scenarios for Product Manager interviews</div></div><div class="meta">24 root-cause-analysis scenarios · Easy / Medium / Hard<br>12 November 2026<br>Independent practice material. All scenarios are hypothetical; company names only identify the type of product. Not affiliated with or endorsed by any company named.</div></section><section class="toc-page"><h1>How to use this set</h1>
+<p>Each scenario is a classic <b>root-cause-analysis (RCA)</b> interview question: a metric changed and you must find out why. Practise out loud with a partner who plays the interviewer. Your partner should use the <b>Solutions PDF</b>, which lists the facts to reveal only when you ask the right question.</p>
+<figure class="viz" role="img" aria-label="Process: Clarify the metric → Check the data → Segment → Internal vs external → Walk the funnel → Confirm and fix"><svg viewBox="0 0 720 258" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker></defs><rect x="10.0" y="6" width="213.3" height="92" rx="10" class="node"/><circle cx="26.0" cy="22" r="11" fill="var(--c1)"/><text x="26.0" y="26" class="on-fill b small" text-anchor="middle"><tspan x="26.0" dy="0">1</tspan></text><text x="124.66666666666667" y="28" class="b small" text-anchor="middle"><tspan x="124.66666666666667" dy="0">Clarify the metric</tspan></text><text x="116.66666666666667" y="58" class="mut tiny" text-anchor="middle"><tspan x="116.66666666666667" dy="0">Exact definition, baseline, size,</tspan><tspan x="116.66666666666667" dy="11">timing (sudden vs gradual)</tspan></text><line x1="226.3" y1="52.0" x2="250.3" y2="52.0" class="edge" marker-end="url(#ah)"/><rect x="253.3" y="6" width="213.3" height="92" rx="10" class="node"/><circle cx="269.3" cy="22" r="11" fill="var(--c1)"/><text x="269.33333333333337" y="26" class="on-fill b small" text-anchor="middle"><tspan x="269.33333333333337" dy="0">2</tspan></text><text x="368.0" y="28" class="b small" text-anchor="middle"><tspan x="368.0" dy="0">Check the data</tspan></text><text x="360.0" y="58" class="mut tiny" text-anchor="middle"><tspan x="360.0" dy="0">Logging, pipelines, definition or</tspan><tspan x="360.0" dy="11">dashboard changes</tspan></text><line x1="469.7" y1="52.0" x2="493.7" y2="52.0" class="edge" marker-end="url(#ah)"/><rect x="496.7" y="6" width="213.3" height="92" rx="10" class="node"/><circle cx="512.7" cy="22" r="11" fill="var(--c1)"/><text x="512.6666666666667" y="26" class="on-fill b small" text-anchor="middle"><tspan x="512.6666666666667" dy="0">3</tspan></text><text x="611.3333333333334" y="28" class="b small" text-anchor="middle"><tspan x="611.3333333333334" dy="0">Segment</tspan></text><text x="603.3333333333334" y="58" class="mut tiny" text-anchor="middle"><tspan x="603.3333333333334" dy="0">Platform, app version, region,</tspan><tspan x="603.3333333333334" dy="11">channel, user type, step of the funnel</tspan></text><path d="M603.3,100 L603.3,112 L116.7,112 L116.7,130" class="edge" fill="none" marker-end="url(#ah)"/><rect x="10.0" y="132" width="213.3" height="92" rx="10" class="node"/><circle cx="26.0" cy="148" r="11" fill="var(--c1)"/><text x="26.0" y="152" class="on-fill b small" text-anchor="middle"><tspan x="26.0" dy="0">4</tspan></text><text x="124.66666666666667" y="154" class="b small" text-anchor="middle"><tspan x="124.66666666666667" dy="0">Internal vs external</tspan></text><text x="116.66666666666667" y="184" class="mut tiny" text-anchor="middle"><tspan x="116.66666666666667" dy="0">Releases, experiments, pricing,</tspan><tspan x="116.66666666666667" dy="11">outages vs competitors, seasonality,</tspan><tspan x="116.66666666666667" dy="11">partners</tspan></text><line x1="226.3" y1="178.0" x2="250.3" y2="178.0" class="edge" marker-end="url(#ah)"/><rect x="253.3" y="132" width="213.3" height="92" rx="10" class="node"/><circle cx="269.3" cy="148" r="11" fill="var(--c1)"/><text x="269.33333333333337" y="152" class="on-fill b small" text-anchor="middle"><tspan x="269.33333333333337" dy="0">5</tspan></text><text x="368.0" y="154" class="b small" text-anchor="middle"><tspan x="368.0" dy="0">Walk the funnel</tspan></text><text x="360.0" y="184" class="mut tiny" text-anchor="middle"><tspan x="360.0" dy="0">Find the exact step where users stop</tspan></text><line x1="469.7" y1="178.0" x2="493.7" y2="178.0" class="edge" marker-end="url(#ah)"/><rect x="496.7" y="132" width="213.3" height="92" rx="10" class="node"/><circle cx="512.7" cy="148" r="11" fill="var(--c1)"/><text x="512.6666666666667" y="152" class="on-fill b small" text-anchor="middle"><tspan x="512.6666666666667" dy="0">6</tspan></text><text x="611.3333333333334" y="154" class="b small" text-anchor="middle"><tspan x="611.3333333333334" dy="0">Confirm and fix</tspan></text><text x="603.3333333333334" y="184" class="mut tiny" text-anchor="middle"><tspan x="603.3333333333334" dy="0">Root cause, immediate fix, metric to</tspan><tspan x="603.3333333333334" dy="11">watch, prevention</tspan></text></svg><figcaption><strong>A repeatable approach to metric-drop questions.</strong> Use it as a checklist, not a script: the best answers prioritise the checks most likely to explain the data first.</figcaption></figure>
+<h2>What interviewers look for</h2>
+<table><thead><tr><th>Skill</th><th>What good looks like</th></tr></thead><tbody>
+<tr><td>Clarifying</td><td>Pins down the metric definition, scope and timing before investigating</td></tr>
+<tr><td>Structure</td><td>States a framework up front and returns to it as hypotheses are ruled out</td></tr>
+<tr><td>Prioritisation</td><td>Checks the most likely and cheapest-to-verify causes first (data, recent releases, segments)</td></tr>
+<tr><td>Data thinking</td><td>Asks for specific cuts: by platform, version, region, channel, funnel step</td></tr>
+<tr><td>Conclusion</td><td>Names the root cause, an immediate fix, how to measure recovery and how to prevent recurrence</td></tr>
+<tr><td>Communication</td><td>Summarises progress regularly; speaks with confident, statement-style delivery</td></tr>
+</tbody></table>
+<h2>Self-scoring (1–5 per row)</h2>
+<table><thead><tr><th>Clarified metric</th><th>Checked data</th><th>Segmented early</th><th>Found exact step</th><th>Fix + prevention</th><th>Clear summary</th></tr></thead>
+<tbody><tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</section><section class="toc-page"><h1>Question list</h1><table><thead><tr><th>#</th><th>Scenario</th><th>Product type</th><th>Level</th></tr></thead><tbody><tr><td>1</td><td>Cart additions down 15% in three days</td><td>E-commerce marketplace (Flipkart-style)</td><td>Medium</td></tr><tr><td>2</td><td>Food-delivery orders down 10% in one city</td><td>Food delivery (Swiggy/Zomato-style)</td><td>Medium</td></tr><tr><td>3</td><td>Ride cancellations up 25%</td><td>Ride-hailing (Uber/Ola-style)</td><td>Medium</td></tr><tr><td>4</td><td>Payment success rate fell from 95% to 91%</td><td>Payments gateway (Razorpay/Stripe-style)</td><td>Hard</td></tr><tr><td>5</td><td>Credit-card application completions down 20%</td><td>Card issuer (American Express-style)</td><td>Medium</td></tr><tr><td>6</td><td>Daily active users down 8% on a social app</td><td>Social media app</td><td>Medium</td></tr><tr><td>7</td><td>Streaming watch time down 12%</td><td>Video streaming (Netflix-style)</td><td>Medium</td></tr><tr><td>8</td><td>App store rating dropped from 4.5 to 3.9</td><td>Fintech app</td><td>Easy</td></tr><tr><td>9</td><td>Search-to-purchase conversion down 9%</td><td>E-commerce search</td><td>Hard</td></tr><tr><td>10</td><td>Revenue down while DAU is up</td><td>Freemium productivity app</td><td>Hard</td></tr><tr><td>11</td><td>Average order value down 7%</td><td>Quick commerce (Blinkit-style)</td><td>Medium</td></tr><tr><td>12</td><td>Sign-ups down 30% overnight</td><td>Consumer app</td><td>Easy</td></tr><tr><td>13</td><td>Support tickets doubled after a release</td><td>SaaS project-management tool</td><td>Easy</td></tr><tr><td>14</td><td>Checkout conversion spiked 20%</td><td>E-commerce</td><td>Medium</td></tr><tr><td>15</td><td>Delivery times up 6 minutes</td><td>Food delivery</td><td>Medium</td></tr><tr><td>16</td><td>Email open rate halved</td><td>B2C newsletter or lifecycle email</td><td>Easy</td></tr><tr><td>17</td><td>Seller listings down 18%</td><td>Marketplace (seller side)</td><td>Medium</td></tr><tr><td>18</td><td>AI assistant escalations up 40%</td><td>AI customer-support assistant (fintech)</td><td>Hard</td></tr><tr><td>19</td><td>Week-1 retention fell from 35% to 28%</td><td>Language-learning app</td><td>Medium</td></tr><tr><td>20</td><td>Refund requests up 3x</td><td>E-commerce fashion</td><td>Medium</td></tr><tr><td>21</td><td>Video upload completion down 25%</td><td>Creator platform (YouTube Shorts-style)</td><td>Medium</td></tr><tr><td>22</td><td>Ad click-through rate down 15%</td><td>Ads platform</td><td>Hard</td></tr><tr><td>23</td><td>Group creation down in a community product</td><td>Community feature (Facebook Groups-style)</td><td>Hard</td></tr><tr><td>24</td><td>Time-to-resolution up for B2B support</td><td>B2B SaaS support</td><td>Medium</td></tr></tbody></table></section><section class="rcaq"><h2>Q1 · Cart additions down 15% in three days</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>E-commerce marketplace (Flipkart-style)</p></div>
+<div class="cv"><h5>Metric</h5><p>Add-to-cart events</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Cart additions on a large e-commerce marketplace have fallen about 15% over the last three days. Diagnose the problem.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Define the metric precisely before you investigate it.</li><li>Which surface is affected: website, iOS app or Android app?</li><li>What shipped in the last week?</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q2 · Food-delivery orders down 10% in one city</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Food delivery (Swiggy/Zomato-style)</p></div>
+<div class="cv"><h5>Metric</h5><p>Completed orders</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Completed orders in Bengaluru fell 10% this week versus last week. Other cities are flat. What happened?</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Is it demand (fewer people ordering) or supply (fewer restaurants or riders)?</li><li>Look at the funnel: sessions, menu views, carts, payments, completions.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q3 · Ride cancellations up 25%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Ride-hailing (Uber/Ola-style)</p></div>
+<div class="cv"><h5>Metric</h5><p>Cancellation rate</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Cancellation rate across the platform rose from 12% to 15% over two weeks. Find the cause.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Who is cancelling: riders or drivers?</li><li>At which moment: before match, after match, after arrival?</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q4 · Payment success rate fell from 95% to 91%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Payments gateway (Razorpay/Stripe-style)</p></div>
+<div class="cv"><h5>Metric</h5><p>Payment success rate</p></div>
+<div class="cv tone-v"><h5>Difficulty</h5><p>Hard</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Payment success rate for merchants dropped from 95% to 91% yesterday afternoon. Diagnose.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Break the rate down by payment method, issuer bank and error code.</li><li>Was anything deployed, or did a partner have an incident?</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q5 · Credit-card application completions down 20%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Card issuer (American Express-style)</p></div>
+<div class="cv"><h5>Metric</h5><p>Applications submitted ÷ started</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Digital credit-card application completions dropped 20% this month. Find out why.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Which step of the application loses the most people now compared with before?</li><li>Did the traffic mix change?</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q6 · Daily active users down 8% on a social app</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Social media app</p></div>
+<div class="cv"><h5>Metric</h5><p>DAU</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>DAU fell 8% over the past week. Leadership wants to know why.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>New, returning or resurrected users?</li><li>What drives users to open the app daily?</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q7 · Streaming watch time down 12%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Video streaming (Netflix-style)</p></div>
+<div class="cv"><h5>Metric</h5><p>Hours watched per member</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Average weekly watch time per member fell 12% month over month. Diagnose.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Is it fewer sessions, shorter sessions or fewer members watching?</li><li>Content calendar matters.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q8 · App store rating dropped from 4.5 to 3.9</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Fintech app</p></div>
+<div class="cv"><h5>Metric</h5><p>Average store rating</p></div>
+<div class="cv tone-g"><h5>Difficulty</h5><p>Easy</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>The app&#x27;s rating dropped from 4.5 to 3.9 in two weeks. Why?</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Read and tag the reviews by date and app version.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q9 · Search-to-purchase conversion down 9%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>E-commerce search</p></div>
+<div class="cv"><h5>Metric</h5><p>Purchases from search ÷ searches</p></div>
+<div class="cv tone-v"><h5>Difficulty</h5><p>Hard</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Conversion from search to purchase fell 9% over a week. Diagnose.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Did searches change, results quality, or purchase behaviour after clicking?</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q10 · Revenue down while DAU is up</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Freemium productivity app</p></div>
+<div class="cv"><h5>Metric</h5><p>Monthly revenue</p></div>
+<div class="cv tone-v"><h5>Difficulty</h5><p>Hard</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>DAU grew 10% this month but subscription revenue fell 5%. Explain.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Decompose revenue: active users × payer conversion × revenue per payer.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q11 · Average order value down 7%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Quick commerce (Blinkit-style)</p></div>
+<div class="cv"><h5>Metric</h5><p>AOV</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Average order value fell 7% this month. Investigate.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>AOV = items per order × price per item.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q12 · Sign-ups down 30% overnight</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Consumer app</p></div>
+<div class="cv"><h5>Metric</h5><p>New sign-ups</p></div>
+<div class="cv tone-g"><h5>Difficulty</h5><p>Easy</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>New sign-ups fell 30% overnight. What do you check?</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Sudden overnight drops are often technical or tracking issues.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q13 · Support tickets doubled after a release</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>SaaS project-management tool</p></div>
+<div class="cv"><h5>Metric</h5><p>Support tickets per 1,000 users</p></div>
+<div class="cv tone-g"><h5>Difficulty</h5><p>Easy</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Support tickets doubled in the week after a release. Diagnose.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Tag tickets by theme and by account size.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q14 · Checkout conversion spiked 20%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>E-commerce</p></div>
+<div class="cv"><h5>Metric</h5><p>Checkout conversion</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Checkout conversion jumped 20% overnight. Celebrate or investigate?</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Good surprises need diagnosis too.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q15 · Delivery times up 6 minutes</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Food delivery</p></div>
+<div class="cv"><h5>Metric</h5><p>Average delivery time</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Average delivery time increased by six minutes this week. Why?</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Break delivery time into its stages.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q16 · Email open rate halved</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>B2C newsletter or lifecycle email</p></div>
+<div class="cv"><h5>Metric</h5><p>Open rate</p></div>
+<div class="cv tone-g"><h5>Difficulty</h5><p>Easy</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Open rate on lifecycle emails fell from 40% to 20%. Diagnose.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Opens depend on deliverability and on how opens are measured.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q17 · Seller listings down 18%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Marketplace (seller side)</p></div>
+<div class="cv"><h5>Metric</h5><p>New listings per day</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>New product listings by sellers dropped 18% in two weeks. Investigate.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Is it fewer sellers listing, or fewer listings per seller?</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q18 · AI assistant escalations up 40%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>AI customer-support assistant (fintech)</p></div>
+<div class="cv"><h5>Metric</h5><p>Escalation to human rate</p></div>
+<div class="cv tone-v"><h5>Difficulty</h5><p>Hard</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>The share of AI support chats escalated to human agents rose from 25% to 35% this week. Diagnose.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Look at intents, retrieval, model changes and knowledge-base changes.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q19 · Week-1 retention fell from 35% to 28%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Language-learning app</p></div>
+<div class="cv"><h5>Metric</h5><p>Week-1 retention</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Week-1 retention for new users dropped from 35% to 28% over the last three cohorts. Diagnose.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Look at activation and onboarding first.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q20 · Refund requests up 3x</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>E-commerce fashion</p></div>
+<div class="cv"><h5>Metric</h5><p>Refund requests</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Refund requests tripled this week for one category. Investigate.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Look at return reasons and sellers.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q21 · Video upload completion down 25%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Creator platform (YouTube Shorts-style)</p></div>
+<div class="cv"><h5>Metric</h5><p>Uploads completed ÷ started</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Completed uploads from creators fell 25% over five days. Diagnose.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Split by file size, network and device.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q22 · Ad click-through rate down 15%</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Ads platform</p></div>
+<div class="cv"><h5>Metric</h5><p>Ad CTR</p></div>
+<div class="cv tone-v"><h5>Difficulty</h5><p>Hard</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Ad CTR on the feed fell 15% while impressions rose. What happened?</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>CTR = clicks ÷ impressions. Which moved?</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q23 · Group creation down in a community product</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>Community feature (Facebook Groups-style)</p></div>
+<div class="cv"><h5>Metric</h5><p>New active groups</p></div>
+<div class="cv tone-v"><h5>Difficulty</h5><p>Hard</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>New groups created per week fell 20%. Find the cause.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Define &#x27;active&#x27; groups. Look at entry points to group creation.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section><section class="rcaq"><h2>Q24 · Time-to-resolution up for B2B support</h2>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv"><h5>Product</h5><p>B2B SaaS support</p></div>
+<div class="cv"><h5>Metric</h5><p>Median time to resolution</p></div>
+<div class="cv tone-b"><h5>Difficulty</h5><p>Medium</p></div></div>
+<div class="admonition example"><p class="admonition-title">Interviewer prompt</p><p>Median support ticket resolution time rose from 6 hours to 11 hours. Diagnose.</p></div>
+<details open class="note"><summary>Hints (use only if stuck)</summary><ul><li>Look at volume, complexity, staffing and routing.</li></ul></details>
+<div class="notes"><p><b>Your notes</b> — clarifying questions, hypotheses, data you'd request, conclusion:</p><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section></div></body></html>

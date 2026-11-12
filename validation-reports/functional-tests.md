@@ -29,7 +29,7 @@ Automated run in Microsoft Edge (headless, Playwright) against the local `file:/
 | All template/dataset download links resolve to files | PASS |  |
 | Module page links to its PDF and the file exists | PASS | pdf/Module-07-Analytics.pdf |
 | Back-to-top button appears after scrolling | PASS |  |
-| Back-to-top returns to the top | PASS | scrollY=48 |
+| Back-to-top returns to the top | PASS | scrollY=33 |
 | Quiz options are keyboard-focusable | PASS |  |
 | No horizontal page scroll at 375 px width | PASS |  |
 | Sidebar hidden on mobile until the menu is opened | PASS |  |

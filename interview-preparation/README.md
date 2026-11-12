@@ -3,6 +3,7 @@
 - **Interactive (106 questions, filterable, show/hide model answers):** [html/Interactive-PM-Handbook/interview.html](../html/Interactive-PM-Handbook/interview.html)
 - **PDF:** [pdf/Interview-Handbook.pdf](../pdf/Interview-Handbook.pdf)
 - **Source:** `content/interview/`
+- **Root-cause-analysis practice pack:** [RCA-Practice-Questions.pdf](RCA-Practice-Questions.pdf) (24 scenarios) and [RCA-Practice-Solutions.pdf](RCA-Practice-Solutions.pdf). Source: `content/rca/rca_questions.yaml`; rebuild with `python -I -X utf8 _build/rca_pdf.py`.
 
 | Category | Questions |
 |---|---:|

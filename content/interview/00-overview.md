@@ -11,6 +11,10 @@ summary: Formats, a universal answer structure, a mock-interview scorecard and p
 !!! source "Key points for interview answers"
     Open with what you do now and the product impact you can show, then link earlier roles to the job. When you describe a product, cover who uses it, how data moves through it and which parts you personally owned — and keep delivery measures such as story points separate from user outcomes. Before diagnosing a falling metric, pin down exactly which metric moved. Build a small set of true STAR stories; label course or personal projects as such, and never stretch a title, a number or your role.
 
+!!! tip "Root-cause-analysis practice pack (PDF)"
+    24 metric-drop scenarios — cart additions, orders, cancellations, payments, retention, AI-assistant escalations and more — for practising with a partner.
+    [⬇ Questions (29 pages)](https://pm-master-handbook-varun.netlify.app/pdf/RCA-Practice-Questions.pdf) · [⬇ Solutions with interviewer reveals (50 pages)](https://pm-master-handbook-varun.netlify.app/pdf/RCA-Practice-Solutions.pdf)
+
 ### A universal answer structure
 
 ```chart

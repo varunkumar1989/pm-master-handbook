@@ -448,7 +448,7 @@ def build():
 
     # ---- copy pdfs into site if present
     (SITE / "pdf").mkdir(exist_ok=True)
-    for f in (ROOT / "pdf").glob("*.pdf"):
+    for f in list((ROOT / "pdf").glob("*.pdf")) + list((ROOT / "interview-preparation").glob("*.pdf")):
         shutil.copy(f, SITE / "pdf" / f.name)
 
     # ---- print documents (inputs for pdf.py)

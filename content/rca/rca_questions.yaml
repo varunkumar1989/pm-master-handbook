@@ -1,0 +1,859 @@
+# Root-cause-analysis practice set. All scenarios are hypothetical and written for practice.
+# Company names identify only the type of product; no real company data is used or implied.
+
+- id: 1
+  title: "Cart additions down 15% in three days"
+  product: "E-commerce marketplace (Flipkart-style)"
+  difficulty: Medium
+  metric: "Add-to-cart events"
+  prompt: "Cart additions on a large e-commerce marketplace have fallen about 15% over the last three days. Diagnose the problem."
+  hints:
+    - "Define the metric precisely before you investigate it."
+    - "Which surface is affected: website, iOS app or Android app?"
+    - "What shipped in the last week?"
+  reveals:
+    - "The drop is almost entirely on the mobile app."
+    - "Analytics logging has been verified as healthy."
+    - "No change by city, age or gender."
+    - "A new app version shipped four days ago that reworked the cart and checkout flow."
+    - "Android only. Android cart additions on the new version are close to zero; iOS is normal."
+    - "A few new bug reports mention being unable to check out."
+  clarify:
+    - "What exactly counts as a cart addition: a tap on Add to cart, or the item successfully appearing in the cart?"
+    - "Is the 15% across web, iOS and Android, or concentrated on one surface?"
+    - "Sudden step change or gradual decline? Compared with what baseline (same days last week)?"
+    - "Has the data pipeline or event definition changed?"
+  hypotheses:
+    - "Data issue: event renamed, SDK change, delayed pipeline."
+    - "Internal change: new app release, A/B test, pricing or catalogue change, outage."
+    - "External: competitor sale, holiday, payment-network issue, news."
+    - "Segment-specific: one platform, version, region, category or user type."
+  path:
+    - "Confirm data quality — logging verified, so the drop is real."
+    - "Segment by surface: concentrated on mobile app."
+    - "Rule out demographics and location: drop is uniform, which points away from market causes."
+    - "Check recent releases: a cart/checkout rework shipped four days ago."
+    - "Split by OS and app version: Android new version shows near-zero additions; iOS normal."
+    - "Walk the funnel on the affected version: product page views normal, Add-to-cart taps normal, cart-add confirmations missing."
+  root_cause: "A bug in the new Android release breaks the step between tapping Add to cart and the item being saved to the cart (for example a failing API call or a crashed handler). The 15% overall drop is the Android share of traffic hitting zero conversions on that step."
+  fix:
+    - "Immediately: roll back or kill-switch the new cart flow on Android; push a hotfix; consider forcing an update."
+    - "Communicate with support so agents can explain and help affected users."
+    - "Estimate lost orders and revenue for leadership."
+  measure:
+    - "Primary: add-to-cart success rate by OS and app version returns to baseline."
+    - "Secondary: checkout starts and orders on Android."
+    - "Guardrail: crash rate, app-store rating, support tickets."
+  prevention:
+    - "Staged rollout (1% → 10% → 50% → 100%) with automatic alerts on funnel-step conversion by version."
+    - "End-to-end tests for the add-to-cart flow on real Android devices before release."
+  mistakes:
+    - "Spending ten minutes on competitors before checking internal releases."
+    - "Not asking about platform and app version early."
+    - "Proposing a redesign instead of finding the broken step."
+  summary60: "Confirmed the data was real, segmented by surface and found the drop on mobile only, ruled out demographic and market causes because the drop was uniform, then tied it to a release four days ago. Splitting by OS showed Android's new version had near-zero cart additions while taps were normal, so the break is between the tap and the cart save. Roll back, hotfix, and add staged rollouts with per-version funnel alerts."
+
+- id: 2
+  title: "Food-delivery orders down 10% in one city"
+  product: "Food delivery (Swiggy/Zomato-style)"
+  difficulty: Medium
+  metric: "Completed orders"
+  prompt: "Completed orders in Bengaluru fell 10% this week versus last week. Other cities are flat. What happened?"
+  hints:
+    - "Is it demand (fewer people ordering) or supply (fewer restaurants or riders)?"
+    - "Look at the funnel: sessions, menu views, carts, payments, completions."
+  reveals:
+    - "App sessions in Bengaluru are flat."
+    - "Menu views and carts are flat, but checkout-to-completion fell."
+    - "Order cancellations by the platform rose sharply in the evening."
+    - "Rider log-ins in Bengaluru fell 20% after a rider-incentive change on Monday."
+  clarify:
+    - "Completed orders or placed orders? Week over week, same days?"
+    - "All of Bengaluru or certain zones? All hours or peak hours?"
+    - "Any change to fees, incentives, restaurants or the app this week?"
+  hypotheses:
+    - "Demand: weather, local holiday, competitor promotion."
+    - "Supply: restaurants offline, rider shortage."
+    - "Product: payment or address bug for that region."
+    - "Policy: fee or incentive change."
+  path:
+    - "Sessions flat → demand is steady."
+    - "Funnel stable until after order placement → issue is fulfilment, not intent."
+    - "Platform cancellations up at dinner peak → no rider assigned in time."
+    - "Rider supply down 20% after Monday's incentive change."
+  root_cause: "A change to rider incentives in Bengaluru reduced rider log-ins at peak, so orders could not be assigned and were auto-cancelled."
+  fix:
+    - "Restore or adjust peak incentives; temporarily raise delivery radius or batching."
+    - "Show honest ETAs and pause ordering in zones with no riders rather than cancelling after payment."
+  measure:
+    - "Rider log-ins at peak, assignment time, platform-cancellation rate, completed orders."
+    - "Guardrails: rider earnings per hour, cost per order."
+  prevention:
+    - "Test incentive changes in a few zones first; alert on assignment time and cancellations."
+  mistakes:
+    - "Assuming a demand problem without checking supply."
+    - "Ignoring the two-sided nature of the marketplace."
+  summary60: "Demand was steady and the funnel was fine until after orders were placed. Platform cancellations jumped at dinner time because riders weren't available: rider log-ins dropped 20% after an incentive change. Restore peak incentives, stop taking orders we can't fulfil, and pilot future incentive changes by zone."
+
+- id: 3
+  title: "Ride cancellations up 25%"
+  product: "Ride-hailing (Uber/Ola-style)"
+  difficulty: Medium
+  metric: "Cancellation rate"
+  prompt: "Cancellation rate across the platform rose from 12% to 15% over two weeks. Find the cause."
+  hints:
+    - "Who is cancelling: riders or drivers?"
+    - "At which moment: before match, after match, after arrival?"
+  reveals:
+    - "Driver-initiated cancellations explain most of the rise."
+    - "They cluster after the driver sees the drop-off location."
+    - "A product change two weeks ago added a 'trip details' screen that shows drivers the destination right after they accept."
+    - "Long airport-bound trips from city edges see the highest cancellations."
+  clarify:
+    - "Rate defined as cancelled ÷ requests? Rider- or driver-initiated?"
+    - "All cities or some? All trip types?"
+    - "Any pricing, matching or app changes in the period?"
+  hypotheses:
+    - "Supply-demand imbalance (events, rain)."
+    - "ETA inaccuracy causing rider cancellations."
+    - "Driver economics: short trips, long pickups, unattractive destinations."
+    - "App change exposing new information at a new moment."
+  path:
+    - "Split by canceller → drivers drive the increase."
+    - "Split by timing → after acceptance, when trip details appear."
+    - "Correlate with release → new trip-details screen shows destination after acceptance."
+    - "Segment by trip → long pickups and out-of-zone drop-offs most affected."
+  root_cause: "A new screen shows drivers the destination after they accept; drivers now cancel trips they find unattractive, which they previously completed."
+  fix:
+    - "Short term: revert the timing or add a small fee for post-accept cancellations."
+    - "Longer term: fix economics of unattractive trips (return-trip bonus, long-pickup pay) rather than hiding information."
+  measure:
+    - "Driver post-accept cancellation rate, rider wait time, completed trips per hour."
+    - "Guardrails: driver earnings, rider complaints, fairness across areas."
+  prevention:
+    - "Model behavioural impact of exposing new information; launch with holdouts."
+  mistakes:
+    - "Treating cancellation as a single metric instead of splitting by who and when."
+  summary60: "The rise was driver cancellations right after accepting, when a new screen revealed the destination. Drivers dropped trips they found unattractive. Revert the timing now, then fix the underlying trip economics and measure post-accept cancellations, wait times and driver earnings."
+
+- id: 4
+  title: "Payment success rate fell from 95% to 91%"
+  product: "Payments gateway (Razorpay/Stripe-style)"
+  difficulty: Hard
+  metric: "Payment success rate"
+  prompt: "Payment success rate for merchants dropped from 95% to 91% yesterday afternoon. Diagnose."
+  hints:
+    - "Break the rate down by payment method, issuer bank and error code."
+    - "Was anything deployed, or did a partner have an incident?"
+  reveals:
+    - "Cards and wallets are normal; UPI success fell from 96% to 84%."
+    - "Failures are concentrated on two large issuer banks."
+    - "Error codes are mostly timeouts from the bank side."
+    - "No deploy on our side; one bank posted a maintenance notice late."
+  clarify:
+    - "Success = successful ÷ attempted? Excluding user-abandoned?"
+    - "All merchants or some? All methods?"
+    - "Sudden or gradual? Still ongoing?"
+  hypotheses:
+    - "Our deploy or config change."
+    - "Partner outage (bank, card network, UPI switch)."
+    - "Fraud rule change blocking legitimate payments."
+    - "Merchant integration issue."
+  path:
+    - "Split by method → UPI only."
+    - "Split by issuer → two banks."
+    - "Error codes → bank-side timeouts."
+    - "Check deploys and partner status → bank maintenance window."
+  root_cause: "Unannounced maintenance at two large issuer banks caused UPI timeouts; our system kept routing those transactions without fallback."
+  fix:
+    - "Route around unhealthy banks where possible; suggest alternate methods to customers; clear status-page communication to merchants."
+    - "Ensure idempotent retries so customers aren't double charged."
+  measure:
+    - "Success rate by method and issuer, timeout rate, duplicate-charge reports."
+  prevention:
+    - "Real-time issuer health monitoring with automatic routing and alerts; partner escalation contacts."
+  mistakes:
+    - "Assuming our code broke before checking partners."
+    - "Ignoring duplicate charges during recovery."
+  summary60: "Breaking the rate down showed only UPI failed, for two banks, with bank-side timeouts and no deploy from us. A bank maintenance window was the cause. Route around unhealthy banks, guide customers to other methods, keep retries idempotent, and build issuer-health monitoring with automatic routing."
+
+- id: 5
+  title: "Credit-card application completions down 20%"
+  product: "Card issuer (American Express-style)"
+  difficulty: Medium
+  metric: "Applications submitted ÷ started"
+  prompt: "Digital credit-card application completions dropped 20% this month. Find out why."
+  hints:
+    - "Which step of the application loses the most people now compared with before?"
+    - "Did the traffic mix change?"
+  reveals:
+    - "Starts are up 30% thanks to a new paid-social campaign."
+    - "Completion rate is down for new paid-social traffic only; organic users are normal."
+    - "Paid-social applicants abandon at the income and document step."
+  clarify:
+    - "Is it completions in count or completion rate?"
+    - "Which channels, devices and steps?"
+    - "Any form, policy or vendor changes?"
+  hypotheses:
+    - "Form or KYC vendor change."
+    - "Mix shift from new acquisition channel."
+    - "Eligibility or credit policy change."
+    - "Technical bug on a device."
+  path:
+    - "Split rate vs volume → rate down, volume up."
+    - "Split by channel → only new paid-social traffic converts poorly."
+    - "Funnel by step → those users drop at income/documents, suggesting lower eligibility or intent."
+  root_cause: "Mix shift: a new paid-social campaign brought many lower-intent or ineligible applicants who abandon at the income and document step. The product itself is not broken."
+  fix:
+    - "Retarget the campaign; add a pre-eligibility check before the long form."
+    - "Judge channels on approved and activated accounts, not starts."
+  measure:
+    - "Completion and approval rate by channel; cost per approved account."
+  prevention:
+    - "Report funnel metrics segmented by acquisition channel by default."
+  mistakes:
+    - "Redesigning the form when the traffic changed, not the product."
+  summary60: "Starts rose 30% from a new paid-social campaign, but only those users completed less, dropping at income and documents. It's a mix shift, not a product bug. Retarget the campaign, add a pre-eligibility step, and measure channels by approved, activated accounts."
+
+- id: 6
+  title: "Daily active users down 8% on a social app"
+  product: "Social media app"
+  difficulty: Medium
+  metric: "DAU"
+  prompt: "DAU fell 8% over the past week. Leadership wants to know why."
+  hints:
+    - "New, returning or resurrected users?"
+    - "What drives users to open the app daily?"
+  reveals:
+    - "New user sign-ups are flat; returning user DAU is down."
+    - "Push notification open rate fell sharply."
+    - "Android 14 users received far fewer notifications after an OS permission change was handled incorrectly in our latest release."
+  clarify:
+    - "How is 'active' defined? Same definition as before?"
+    - "Which platforms, regions, cohorts?"
+  hypotheses:
+    - "Seasonality or holiday."
+    - "Notification delivery issue."
+    - "Feed quality or ranking change."
+    - "Competitor launch."
+  path:
+    - "Decompose DAU → returning users down."
+    - "Main entry point for returning users is notifications → open rate dropped."
+    - "Split by OS version → Android 14 deliveries down after release."
+  root_cause: "The latest release mishandled the Android notification-permission prompt, so many Android 14 users stopped receiving notifications and opened the app less."
+  fix:
+    - "Hotfix the permission flow; re-request permission in context with a clear reason."
+  measure:
+    - "Notification delivery and open rate by OS version; returning DAU."
+    - "Guardrails: opt-out rate, uninstalls."
+  prevention:
+    - "Monitor notification delivery by OS version as a release health metric."
+  mistakes:
+    - "Blaming content or competitors without decomposing DAU."
+  summary60: "Returning users fell, not new ones. Their main trigger, notifications, collapsed on Android 14 after our release mishandled the permission prompt. Hotfix and re-ask permission in context, and add notification delivery by OS version to release monitoring."
+
+- id: 7
+  title: "Streaming watch time down 12%"
+  product: "Video streaming (Netflix-style)"
+  difficulty: Medium
+  metric: "Hours watched per member"
+  prompt: "Average weekly watch time per member fell 12% month over month. Diagnose."
+  hints:
+    - "Is it fewer sessions, shorter sessions or fewer members watching?"
+    - "Content calendar matters."
+  reveals:
+    - "Sessions per member are steady; average session length fell."
+    - "Last month had the finale of a very popular series; this month has no big release."
+    - "Drop is across all regions and devices."
+  clarify:
+    - "Per member or total? Same comparison period?"
+    - "Any playback, quality or app changes?"
+  hypotheses:
+    - "Content seasonality."
+    - "Playback quality issues causing early exits."
+    - "Recommendation change."
+    - "Competitor content."
+  path:
+    - "Uniform across segments → not a device or region bug."
+    - "Shorter sessions, not fewer → users still come back."
+    - "Compare with content calendar → last month had a major finale."
+  root_cause: "Natural seasonality: last month's spike from a major series finale inflated the baseline; this month returns to normal levels."
+  fix:
+    - "No product fix needed; compare against a seasonally adjusted baseline or same period last year."
+    - "Consider surfacing back-catalogue recommendations after big finales."
+  measure:
+    - "Watch time vs seasonal baseline; churn among finale watchers."
+  prevention:
+    - "Annotate dashboards with content releases."
+  mistakes:
+    - "Inventing a bug when the baseline was unusually high."
+  summary60: "The drop is uniform and session counts are steady, only length fell. Last month had a huge finale that inflated the baseline. This is seasonality; compare against a seasonal baseline and use the moment to promote back-catalogue titles."
+
+- id: 8
+  title: "App store rating dropped from 4.5 to 3.9"
+  product: "Fintech app"
+  difficulty: Easy
+  metric: "Average store rating"
+  prompt: "The app's rating dropped from 4.5 to 3.9 in two weeks. Why?"
+  hints:
+    - "Read and tag the reviews by date and app version."
+  reveals:
+    - "Most new 1-star reviews mention being logged out repeatedly."
+    - "They started after version 6.2, which changed session handling."
+    - "Crash rate is normal."
+  clarify:
+    - "Which stores? Which versions? How many new reviews?"
+    - "Did we change in-app rating prompts?"
+  hypotheses:
+    - "Bug in a release."
+    - "Fee or policy change."
+    - "Change in who is prompted to rate."
+  path:
+    - "Tag reviews → logouts dominate."
+    - "Correlate with version → started at 6.2."
+    - "Release notes → session-timeout change."
+  root_cause: "Version 6.2 shortened session timeouts, forcing frequent re-logins and frustrating users."
+  fix:
+    - "Restore a reasonable timeout with biometric re-authentication; respond to reviewers once fixed."
+  measure:
+    - "Login events per user, rating trend, review themes."
+  prevention:
+    - "Track re-authentication frequency as a release metric; involve security and UX together."
+  mistakes:
+    - "Responding to reviews without diagnosing the cause."
+  summary60: "Tagging the reviews showed repeated logouts starting with version 6.2, which shortened session timeouts. Restore a sensible timeout with biometric re-login, reply to reviewers, and track re-login frequency per release."
+
+- id: 9
+  title: "Search-to-purchase conversion down 9%"
+  product: "E-commerce search"
+  difficulty: Hard
+  metric: "Purchases from search ÷ searches"
+  prompt: "Conversion from search to purchase fell 9% over a week. Diagnose."
+  hints:
+    - "Did searches change, results quality, or purchase behaviour after clicking?"
+  reveals:
+    - "Search volume is flat. Click-through on results fell; zero-result searches doubled."
+    - "Zero-result queries are mostly in Hindi and Hinglish."
+    - "A new tokenizer was deployed to the search service last Tuesday."
+  clarify:
+    - "Conversion per search or per searcher? Same window?"
+    - "Which languages, categories, platforms?"
+  hypotheses:
+    - "Ranking or index change."
+    - "Catalogue gaps (out of stock)."
+    - "Price changes."
+    - "Language or spelling handling."
+  path:
+    - "Search volume flat, CTR down → results got worse."
+    - "Zero-result rate doubled → index or query processing."
+    - "Segment by language → Hindi/Hinglish."
+    - "Correlate with deploy → new tokenizer."
+  root_cause: "A new tokenizer broke handling of Hindi and transliterated queries, returning zero or poor results."
+  fix:
+    - "Roll back the tokenizer for those languages; add multilingual test queries."
+  measure:
+    - "Zero-result rate, CTR and conversion by language."
+  prevention:
+    - "Offline search evaluation set covering languages and spelling variants before every ranking deploy."
+  mistakes:
+    - "Looking only at overall conversion, not intermediate funnel metrics like CTR and zero-results."
+  summary60: "Searches were flat but click-through fell and zero-result searches doubled, mostly for Hindi and Hinglish queries, right after a tokenizer deploy. Roll it back for those languages and require a multilingual evaluation set before search changes."
+
+- id: 10
+  title: "Revenue down while DAU is up"
+  product: "Freemium productivity app"
+  difficulty: Hard
+  metric: "Monthly revenue"
+  prompt: "DAU grew 10% this month but subscription revenue fell 5%. Explain."
+  hints:
+    - "Decompose revenue: active users × payer conversion × revenue per payer."
+  reveals:
+    - "New users are mostly from a student promotion and are on the free tier."
+    - "Existing paid users: renewal failures rose because card payments failed after a billing provider change."
+  clarify:
+    - "Revenue recognised or billed? Gross or net of refunds?"
+    - "Which plans and regions?"
+  hypotheses:
+    - "Mix shift to free users."
+    - "Payment failures (involuntary churn)."
+    - "Price or discount changes."
+    - "Refunds."
+  path:
+    - "Decompose → payer conversion down (mix shift), and revenue per payer down."
+    - "Renewal failure rate up → billing provider change broke card-on-file renewals."
+  root_cause: "Two causes: a student promotion added many free users (diluting conversion, which is fine), and a billing-provider migration broke card renewals (involuntary churn, which is not)."
+  fix:
+    - "Fix renewal billing; run dunning (retries, card update emails) for failed renewals."
+    - "Report free and paid cohorts separately."
+  measure:
+    - "Renewal success rate, involuntary churn, revenue per payer."
+  prevention:
+    - "Migration checklists with shadow billing runs before cut-over."
+  mistakes:
+    - "Stopping at the first explanation (mix shift) and missing the payment bug."
+  summary60: "Revenue = users × payer rate × revenue per payer. DAU rose from free student sign-ups, which is expected dilution. But renewals were also failing after a billing-provider migration. Fix renewals and run dunning, and always look for a second cause."
+
+- id: 11
+  title: "Average order value down 7%"
+  product: "Quick commerce (Blinkit-style)"
+  difficulty: Medium
+  metric: "AOV"
+  prompt: "Average order value fell 7% this month. Investigate."
+  hints:
+    - "AOV = items per order × price per item."
+  reveals:
+    - "Price per item is flat; items per order fell."
+    - "Free-delivery threshold was lowered from ₹199 to ₹99 two weeks ago."
+    - "Order count rose 12%."
+  clarify:
+    - "AOV including fees and discounts? Same definition?"
+    - "Which cities and categories?"
+  hypotheses:
+    - "Threshold or fee change."
+    - "Category mix shift."
+    - "Discounting."
+    - "Recommendation module broken."
+  path:
+    - "Decompose AOV → items per order down."
+    - "Check pricing changes → lower free-delivery threshold."
+    - "Order count up → users split baskets into smaller, more frequent orders."
+  root_cause: "Lowering the free-delivery threshold let users place smaller, more frequent orders. AOV fell but order count rose."
+  fix:
+    - "Decide on contribution margin, not AOV: if delivery cost per order now exceeds gains, adjust the threshold."
+  measure:
+    - "Contribution margin per order and per user, order frequency, delivery cost."
+  prevention:
+    - "Evaluate fee changes on unit economics and total GMV per user, not one metric."
+  mistakes:
+    - "Calling lower AOV a problem without checking total revenue and margin."
+  summary60: "AOV dropped because items per order fell after the free-delivery threshold was lowered. Orders went up 12%. Whether this is bad depends on contribution margin per user, so judge the change on unit economics, not AOV alone."
+
+- id: 12
+  title: "Sign-ups down 30% overnight"
+  product: "Consumer app"
+  difficulty: Easy
+  metric: "New sign-ups"
+  prompt: "New sign-ups fell 30% overnight. What do you check?"
+  hints:
+    - "Sudden overnight drops are often technical or tracking issues."
+  reveals:
+    - "Installs are normal."
+    - "OTP delivery success fell from 98% to 70%."
+    - "The SMS provider had an incident in one region."
+  clarify:
+    - "Sign-ups started or completed? All platforms?"
+  hypotheses:
+    - "Tracking break."
+    - "Sign-up flow bug."
+    - "OTP/SMS delivery failure."
+    - "Acquisition campaign paused."
+  path:
+    - "Installs normal → acquisition is fine."
+    - "Funnel → users stuck at OTP verification."
+    - "OTP delivery down → SMS provider incident."
+  root_cause: "An SMS provider incident stopped OTP delivery in one region, blocking sign-up completion."
+  fix:
+    - "Fail over to a secondary SMS provider; offer voice OTP or email fallback."
+  measure:
+    - "OTP delivery rate by provider and region; sign-up completion."
+  prevention:
+    - "Multi-provider OTP with automatic failover and alerts."
+  mistakes:
+    - "Pausing marketing spend before checking the funnel."
+  summary60: "Installs were normal but users got stuck at OTP verification because an SMS provider failed in one region. Fail over to a backup provider, add voice or email fallback, and alert on OTP delivery by provider."
+
+- id: 13
+  title: "Support tickets doubled after a release"
+  product: "SaaS project-management tool"
+  difficulty: Easy
+  metric: "Support tickets per 1,000 users"
+  prompt: "Support tickets doubled in the week after a release. Diagnose."
+  hints:
+    - "Tag tickets by theme and by account size."
+  reveals:
+    - "Most tickets ask where the export button went."
+    - "The redesign moved export into a new 'More' menu."
+  clarify:
+    - "Which ticket categories? All customer segments?"
+  hypotheses:
+    - "Bug."
+    - "Discoverability problem from UI change."
+    - "Pricing change."
+  path:
+    - "Tag tickets → 'can't find export' dominates."
+    - "Release notes → export moved into overflow menu."
+  root_cause: "A redesign hid a frequently used action, creating a discoverability problem rather than a bug."
+  fix:
+    - "Restore export as a visible action or add an in-app pointer; update help articles."
+  measure:
+    - "Ticket volume by theme, export usage."
+  prevention:
+    - "Usability-test redesigns on top tasks; check feature usage before moving controls."
+  mistakes:
+    - "Treating tickets as noise because nothing is 'broken'."
+  summary60: "Tickets doubled mainly because users couldn't find export after the redesign moved it into a menu. Make export visible again, add a pointer and help update, and usability-test top tasks before moving controls."
+
+- id: 14
+  title: "Checkout conversion spiked 20%"
+  product: "E-commerce"
+  difficulty: Medium
+  metric: "Checkout conversion"
+  prompt: "Checkout conversion jumped 20% overnight. Celebrate or investigate?"
+  hints:
+    - "Good surprises need diagnosis too."
+  reveals:
+    - "Orders didn't change; checkout starts fell."
+    - "A tracking change stopped firing checkout_start for guest users."
+  clarify:
+    - "Is the numerator or denominator driving it?"
+  hypotheses:
+    - "Real improvement (promo, UX)."
+    - "Denominator dropped (tracking or bot filter)."
+    - "Mix shift."
+  path:
+    - "Numerator (orders) flat → no real gain."
+    - "Denominator down → checkout_start events missing."
+    - "Tracking release → guest event broken."
+  root_cause: "A tracking bug stopped logging checkout starts for guest users, shrinking the denominator and inflating conversion."
+  fix:
+    - "Fix the event; annotate the dashboard; restate affected numbers."
+  measure:
+    - "Reconcile events with backend order and session data."
+  prevention:
+    - "Automated checks comparing event counts with backend counts."
+  mistakes:
+    - "Celebrating before checking numerator and denominator separately."
+  summary60: "Orders were flat; checkout starts dropped because guest checkout_start events stopped firing. The 'improvement' was a tracking bug. Fix the event, restate numbers, and reconcile analytics with backend counts automatically."
+
+- id: 15
+  title: "Delivery times up 6 minutes"
+  product: "Food delivery"
+  difficulty: Medium
+  metric: "Average delivery time"
+  prompt: "Average delivery time increased by six minutes this week. Why?"
+  hints:
+    - "Break delivery time into its stages."
+  reveals:
+    - "Rider travel time is unchanged."
+    - "Time waiting at restaurants rose."
+    - "A new 'restaurant ready' estimate went live, assigning riders earlier."
+  clarify:
+    - "Mean or median? All cities?"
+  hypotheses:
+    - "Traffic or weather."
+    - "Rider shortage."
+    - "Restaurant prep delays."
+    - "Dispatch algorithm change."
+  path:
+    - "Decompose: prep + wait + travel."
+    - "Wait at restaurant up; travel flat."
+    - "New dispatch model assigns riders too early, so they queue at restaurants and lose other trips."
+  root_cause: "A dispatch change assigned riders too early, so they waited at restaurants instead of delivering other orders, increasing overall delivery times."
+  fix:
+    - "Roll back or recalibrate the ready-time model with live kitchen load."
+  measure:
+    - "Rider wait time at restaurant, delivery time p50/p90, orders per rider-hour."
+  prevention:
+    - "Launch dispatch changes as switchback experiments with time and efficiency guardrails."
+  mistakes:
+    - "Blaming traffic without decomposing the delivery stages."
+  summary60: "Travel was unchanged but riders waited longer at restaurants after a new readiness model assigned them too early. Recalibrate with live kitchen load and test dispatch changes with switchback experiments."
+
+- id: 16
+  title: "Email open rate halved"
+  product: "B2C newsletter or lifecycle email"
+  difficulty: Easy
+  metric: "Open rate"
+  prompt: "Open rate on lifecycle emails fell from 40% to 20%. Diagnose."
+  hints:
+    - "Opens depend on deliverability and on how opens are measured."
+  reveals:
+    - "Click-through rate per delivered email is unchanged."
+    - "Apple Mail users show the drop; a privacy change altered open tracking."
+  clarify:
+    - "Open rate measured how? All email clients?"
+  hypotheses:
+    - "Spam-folder deliverability problem."
+    - "Subject line change."
+    - "Measurement change (privacy features)."
+  path:
+    - "Clicks steady → engagement probably unchanged."
+    - "Split by client → Apple Mail only."
+    - "Measurement changed due to privacy features."
+  root_cause: "A privacy feature change in one email client altered how opens are counted; real engagement did not fall."
+  fix:
+    - "Move success metrics to clicks and conversions; note the change on dashboards."
+  measure:
+    - "Click-through, conversions per send, unsubscribe rate."
+  prevention:
+    - "Prefer robust downstream metrics over opens."
+  mistakes:
+    - "Rewriting emails because of a measurement artefact."
+  summary60: "Clicks were steady and only one email client showed the drop, after a privacy change affected open tracking. Engagement didn't fall; switch to clicks and conversions as the primary metrics."
+
+- id: 17
+  title: "Seller listings down 18%"
+  product: "Marketplace (seller side)"
+  difficulty: Medium
+  metric: "New listings per day"
+  prompt: "New product listings by sellers dropped 18% in two weeks. Investigate."
+  hints:
+    - "Is it fewer sellers listing, or fewer listings per seller?"
+  reveals:
+    - "Active sellers are steady; listings per seller fell."
+    - "A new mandatory field (HSN tax code) was added to the listing form."
+    - "Listing form abandonment doubled at that field."
+  clarify:
+    - "Which categories and seller sizes?"
+  hypotheses:
+    - "Seller churn."
+    - "Listing tool bug."
+    - "Policy or form change."
+    - "Seasonality."
+  path:
+    - "Sellers steady, listings per seller down."
+    - "Form funnel → abandonment at new mandatory field."
+  root_cause: "A new mandatory tax field confused small sellers, who abandoned listings."
+  fix:
+    - "Auto-suggest the code from category; allow saving drafts; add help text."
+  measure:
+    - "Form completion rate, listings per seller, time to list."
+  prevention:
+    - "Test form changes with small sellers; roll out gradually."
+  mistakes:
+    - "Assuming sellers are leaving the platform."
+  summary60: "Sellers didn't leave; they abandoned listings at a new mandatory tax-code field. Auto-suggest the code, allow drafts, and test form changes with small sellers first."
+
+- id: 18
+  title: "AI assistant escalations up 40%"
+  product: "AI customer-support assistant (fintech)"
+  difficulty: Hard
+  metric: "Escalation to human rate"
+  prompt: "The share of AI support chats escalated to human agents rose from 25% to 35% this week. Diagnose."
+  hints:
+    - "Look at intents, retrieval, model changes and knowledge-base changes."
+  reveals:
+    - "The increase is concentrated in fee-related questions."
+    - "A new fee schedule was published but the knowledge base was not re-indexed."
+    - "The assistant says 'I'm not sure' and escalates more on fee questions."
+  clarify:
+    - "Escalation by user request or by assistant? All intents?"
+    - "Any model, prompt or knowledge-base change?"
+  hypotheses:
+    - "Model or prompt change."
+    - "Retrieval returning stale or no documents."
+    - "New question types (product launch)."
+    - "Bug in handoff logic."
+  path:
+    - "Split by intent → fee questions."
+    - "Check retrieval → no current fee document found."
+    - "KB pipeline → new schedule not re-indexed."
+  root_cause: "The fee schedule changed but the retrieval index was not refreshed, so the assistant couldn't find current fee information and correctly escalated."
+  fix:
+    - "Re-index; add policy-owner workflow that triggers re-indexing on publication."
+  measure:
+    - "Escalation rate by intent, retrieval hit rate, answer accuracy on eval set."
+  prevention:
+    - "Freshness monitoring for key documents; run the evaluation set after any knowledge change."
+  mistakes:
+    - "Blaming the model when retrieval data is stale."
+  summary60: "Escalations rose for fee questions because a new fee schedule wasn't re-indexed, so retrieval found nothing current and the assistant handed off. Re-index, connect publishing to indexing, and monitor document freshness."
+
+- id: 19
+  title: "Week-1 retention fell from 35% to 28%"
+  product: "Language-learning app"
+  difficulty: Medium
+  metric: "Week-1 retention"
+  prompt: "Week-1 retention for new users dropped from 35% to 28% over the last three cohorts. Diagnose."
+  hints:
+    - "Look at activation and onboarding first."
+  reveals:
+    - "A new longer placement test was added to onboarding."
+    - "Users who skip or fail the test retain much less."
+    - "Lesson completion on day 1 fell."
+  clarify:
+    - "Retention defined as active in days 7–13? All acquisition channels?"
+  hypotheses:
+    - "Acquisition mix shift."
+    - "Onboarding change."
+    - "Notification issue."
+    - "Content difficulty."
+  path:
+    - "Channel mix stable."
+    - "Day-1 activation down."
+    - "New placement test → longer time to first lesson."
+  root_cause: "A longer onboarding placement test delayed the first lesson and placed some users at too-hard levels, reducing activation and week-1 retention."
+  fix:
+    - "Make the test optional or shorter; start with an easy first lesson."
+  measure:
+    - "Time to first lesson, day-1 lesson completion, week-1 retention."
+  prevention:
+    - "A/B test onboarding changes against activation metrics."
+  mistakes:
+    - "Looking at week-1 retention without examining day-1 activation."
+  summary60: "Channel mix was stable but day-1 lesson completion fell after a longer placement test was added to onboarding. Shorten or make it optional, and A/B test onboarding changes on activation."
+
+- id: 20
+  title: "Refund requests up 3x"
+  product: "E-commerce fashion"
+  difficulty: Medium
+  metric: "Refund requests"
+  prompt: "Refund requests tripled this week for one category. Investigate."
+  hints:
+    - "Look at return reasons and sellers."
+  reveals:
+    - "Return reason is mostly 'size doesn't fit'."
+    - "A new size chart format was rolled out for that category."
+    - "One major brand's chart used a different standard."
+  clarify:
+    - "Which category, sellers and regions?"
+  hypotheses:
+    - "Quality issue with a seller."
+    - "Wrong product images."
+    - "Size chart change."
+    - "Fraud."
+  path:
+    - "Return reasons → sizing."
+    - "Category change → new size chart format."
+    - "Brand-level split → one brand's mapping wrong."
+  root_cause: "A size-chart migration mapped one major brand's sizes incorrectly, so customers ordered the wrong size."
+  fix:
+    - "Correct the mapping; notify affected customers; easy exchanges."
+  measure:
+    - "Return rate by brand and reason."
+  prevention:
+    - "Validate catalogue migrations against sample products before launch."
+  mistakes:
+    - "Blaming the seller's quality without checking reasons."
+  summary60: "Returns were mostly sizing-related after a size-chart migration; one major brand's sizes were mapped wrong. Fix the mapping, support exchanges and validate catalogue migrations."
+
+- id: 21
+  title: "Video upload completion down 25%"
+  product: "Creator platform (YouTube Shorts-style)"
+  difficulty: Medium
+  metric: "Uploads completed ÷ started"
+  prompt: "Completed uploads from creators fell 25% over five days. Diagnose."
+  hints:
+    - "Split by file size, network and device."
+  reveals:
+    - "Failures are on uploads larger than 100 MB."
+    - "A CDN configuration change reduced the upload timeout."
+  clarify:
+    - "Started vs completed? App or web?"
+  hypotheses:
+    - "App bug."
+    - "Upload infrastructure change."
+    - "Policy or copyright checks."
+    - "Network issues."
+  path:
+    - "Split by file size → large files fail."
+    - "Infra changes → timeout reduced."
+  root_cause: "An infrastructure change reduced upload timeouts, causing large videos to fail."
+  fix:
+    - "Restore timeout; use resumable chunked uploads."
+  measure:
+    - "Upload success by size band, retries."
+  prevention:
+    - "Synthetic large-file upload tests after infra changes."
+  mistakes:
+    - "Assuming creators lost motivation."
+  summary60: "Only uploads over 100 MB failed after a CDN change shortened timeouts. Restore the timeout, add resumable uploads and test large files after infrastructure changes."
+
+- id: 22
+  title: "Ad click-through rate down 15%"
+  product: "Ads platform"
+  difficulty: Hard
+  metric: "Ad CTR"
+  prompt: "Ad CTR on the feed fell 15% while impressions rose. What happened?"
+  hints:
+    - "CTR = clicks ÷ impressions. Which moved?"
+  reveals:
+    - "Clicks are flat; impressions rose 18%."
+    - "Ad load per session was increased last week."
+    - "Lower-position ads have low CTR."
+  clarify:
+    - "Which placements, advertisers, devices?"
+  hypotheses:
+    - "Ad quality drop."
+    - "More impressions at worse positions."
+    - "Bot traffic."
+    - "Tracking issue."
+  path:
+    - "Clicks flat, impressions up → denominator effect."
+    - "Ad load change → extra lower-quality slots."
+  root_cause: "Increasing ad load added low-position impressions, diluting CTR while clicks stayed flat."
+  fix:
+    - "Evaluate on revenue, advertiser ROI and user experience, not CTR alone; tune ad load."
+  measure:
+    - "Revenue per session, advertiser conversions, session length, user complaints."
+  prevention:
+    - "Ad-load experiments with user guardrails."
+  mistakes:
+    - "Treating CTR decline as ad quality decline without checking impressions."
+  summary60: "Clicks were flat and impressions rose because ad load increased. CTR diluted mathematically. Judge ad load on revenue, advertiser ROI and user experience guardrails."
+
+- id: 23
+  title: "Group creation down in a community product"
+  product: "Community feature (Facebook Groups-style)"
+  difficulty: Hard
+  metric: "New active groups"
+  prompt: "New groups created per week fell 20%. Find the cause."
+  hints:
+    - "Define 'active' groups. Look at entry points to group creation."
+  reveals:
+    - "Group creation from the main navigation is unchanged."
+    - "Creation from the 'events' entry point dropped to near zero after a navigation redesign removed that entry point."
+  clarify:
+    - "Groups created or groups that become active?"
+  hypotheses:
+    - "Entry point removed."
+    - "Spam enforcement change."
+    - "Competition."
+    - "Seasonality."
+  path:
+    - "Split by entry point → events entry point vanished."
+    - "Navigation redesign removed it."
+  root_cause: "A navigation redesign removed a high-volume entry point for creating groups."
+  fix:
+    - "Restore or replace the entry point; measure group activation, not just creation."
+  measure:
+    - "Groups created by entry point; groups active after 14 days."
+  prevention:
+    - "Check traffic per entry point before removing navigation elements."
+  mistakes:
+    - "Ignoring entry-point segmentation."
+  summary60: "Creation from main navigation was unchanged; the events entry point disappeared in a redesign. Restore it and measure activation of new groups, not just creation."
+
+- id: 24
+  title: "Time-to-resolution up for B2B support"
+  product: "B2B SaaS support"
+  difficulty: Medium
+  metric: "Median time to resolution"
+  prompt: "Median support ticket resolution time rose from 6 hours to 11 hours. Diagnose."
+  hints:
+    - "Look at volume, complexity, staffing and routing."
+  reveals:
+    - "Ticket volume is flat."
+    - "Tickets wait longer before first response."
+    - "A new routing rule sends all enterprise tickets to one small team."
+  clarify:
+    - "Median or mean? All tiers?"
+  hypotheses:
+    - "Higher volume."
+    - "More complex issues."
+    - "Staffing changes."
+    - "Routing changes."
+  path:
+    - "Volume flat → not demand."
+    - "First response time up → queueing."
+    - "Routing rule overloaded one team."
+  root_cause: "A routing rule concentrated enterprise tickets on a small team, creating a queue."
+  fix:
+    - "Rebalance routing; add overflow rules."
+  measure:
+    - "First response time, queue length by team, resolution time by tier."
+  prevention:
+    - "Simulate routing changes on historical ticket data."
+  mistakes:
+    - "Hiring more agents without fixing routing."
+  summary60: "Volume was flat but first-response time rose because a routing rule sent all enterprise tickets to one small team. Rebalance routing, add overflow and simulate routing changes beforehand."

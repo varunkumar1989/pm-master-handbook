@@ -1,0 +1,344 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>RCA Practice — Solutions</title><link rel="stylesheet" href="file:///C:/Users/varun/Documents/ClaudeProjects/Product-Management-Master-Handbook/_build/assets/style.css"><style>
+.rcaq{break-before:page}.rcaq h2{margin-top:0;border-top:0}
+.notes .line{border-bottom:1px solid #D0D5DD;height:26px}
+.meta-line{color:#475467;font-size:.9rem}
+.canvas{margin:10px 0}
+</style></head><body class="print" data-theme="light"><div class="article"><section class="cover"><div><div class="stripe"></div><h1>RCA Interview Practice — Solutions</h1><div class="sub">Model answers, interviewer reveals and common mistakes for all 24 scenarios</div></div><div class="meta">24 root-cause-analysis scenarios · Easy / Medium / Hard<br>12 November 2026<br>Independent practice material. All scenarios are hypothetical; company names only identify the type of product. Not affiliated with or endorsed by any company named.</div></section><section class="toc-page"><h1>How to use the solutions</h1>
+<p>If you are the practice interviewer, read the <b>Interviewer reveals</b> before the session and share each fact only when the candidate asks a question that would uncover it. If you are self-studying, attempt the question first, then compare your path with the model path below.</p>
+<p>Each model answer shows one strong path to the root cause. Other orders of investigation are fine if they are structured and prioritised. All facts are invented for practice.</p></section><section class="rcaq"><h2>Q1 · Cart additions down 15% in three days</h2>
+<p class="meta-line"><b>E-commerce marketplace (Flipkart-style)</b> · Metric: Add-to-cart events · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Cart additions on a large e-commerce marketplace have fallen about 15% over the last three days. Diagnose the problem.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>What exactly counts as a cart addition: a tap on Add to cart, or the item successfully appearing in the cart?</li><li>Is the 15% across web, iOS and Android, or concentrated on one surface?</li><li>Sudden step change or gradual decline? Compared with what baseline (same days last week)?</li><li>Has the data pipeline or event definition changed?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Data issue: event renamed, SDK change, delayed pipeline.</li><li>Internal change: new app release, A/B test, pricing or catalogue change, outage.</li><li>External: competitor sale, holiday, payment-network issue, news.</li><li>Segment-specific: one platform, version, region, category or user type.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>The drop is almost entirely on the mobile app.</li><li>Analytics logging has been verified as healthy.</li><li>No change by city, age or gender.</li><li>A new app version shipped four days ago that reworked the cart and checkout flow.</li><li>Android only. Android cart additions on the new version are close to zero; iOS is normal.</li><li>A few new bug reports mention being unable to check out.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Confirm data quality — logging verified, so the drop is real.</li><li>Segment by surface: concentrated on mobile app.</li><li>Rule out demographics and location: drop is uniform, which points away from market causes.</li><li>Check recent releases: a cart/checkout rework shipped four days ago.</li><li>Split by OS and app version: Android new version shows near-zero additions; iOS normal.</li><li>Walk the funnel on the affected version: product page views normal, Add-to-cart taps normal, cart-add confirmations missing.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A bug in the new Android release breaks the step between tapping Add to cart and the item being saved to the cart (for example a failing API call or a crashed handler). The 15% overall drop is the Android share of traffic hitting zero conversions on that step.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Immediately: roll back or kill-switch the new cart flow on Android; push a hotfix; consider forcing an update.</li><li>Communicate with support so agents can explain and help affected users.</li><li>Estimate lost orders and revenue for leadership.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Primary: add-to-cart success rate by OS and app version returns to baseline.</li><li>Secondary: checkout starts and orders on Android.</li><li>Guardrail: crash rate, app-store rating, support tickets.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Staged rollout (1% → 10% → 50% → 100%) with automatic alerts on funnel-step conversion by version.</li><li>End-to-end tests for the add-to-cart flow on real Android devices before release.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Spending ten minutes on competitors before checking internal releases.</li><li>Not asking about platform and app version early.</li><li>Proposing a redesign instead of finding the broken step.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Confirmed the data was real, segmented by surface and found the drop on mobile only, ruled out demographic and market causes because the drop was uniform, then tied it to a release four days ago. Splitting by OS showed Android&#x27;s new version had near-zero cart additions while taps were normal, so the break is between the tap and the cart save. Roll back, hotfix, and add staged rollouts with per-version funnel alerts.</p></div>
+</section><section class="rcaq"><h2>Q2 · Food-delivery orders down 10% in one city</h2>
+<p class="meta-line"><b>Food delivery (Swiggy/Zomato-style)</b> · Metric: Completed orders · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Completed orders in Bengaluru fell 10% this week versus last week. Other cities are flat. What happened?</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Completed orders or placed orders? Week over week, same days?</li><li>All of Bengaluru or certain zones? All hours or peak hours?</li><li>Any change to fees, incentives, restaurants or the app this week?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Demand: weather, local holiday, competitor promotion.</li><li>Supply: restaurants offline, rider shortage.</li><li>Product: payment or address bug for that region.</li><li>Policy: fee or incentive change.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>App sessions in Bengaluru are flat.</li><li>Menu views and carts are flat, but checkout-to-completion fell.</li><li>Order cancellations by the platform rose sharply in the evening.</li><li>Rider log-ins in Bengaluru fell 20% after a rider-incentive change on Monday.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Sessions flat → demand is steady.</li><li>Funnel stable until after order placement → issue is fulfilment, not intent.</li><li>Platform cancellations up at dinner peak → no rider assigned in time.</li><li>Rider supply down 20% after Monday&#x27;s incentive change.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A change to rider incentives in Bengaluru reduced rider log-ins at peak, so orders could not be assigned and were auto-cancelled.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Restore or adjust peak incentives; temporarily raise delivery radius or batching.</li><li>Show honest ETAs and pause ordering in zones with no riders rather than cancelling after payment.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Rider log-ins at peak, assignment time, platform-cancellation rate, completed orders.</li><li>Guardrails: rider earnings per hour, cost per order.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Test incentive changes in a few zones first; alert on assignment time and cancellations.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Assuming a demand problem without checking supply.</li><li>Ignoring the two-sided nature of the marketplace.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Demand was steady and the funnel was fine until after orders were placed. Platform cancellations jumped at dinner time because riders weren&#x27;t available: rider log-ins dropped 20% after an incentive change. Restore peak incentives, stop taking orders we can&#x27;t fulfil, and pilot future incentive changes by zone.</p></div>
+</section><section class="rcaq"><h2>Q3 · Ride cancellations up 25%</h2>
+<p class="meta-line"><b>Ride-hailing (Uber/Ola-style)</b> · Metric: Cancellation rate · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Cancellation rate across the platform rose from 12% to 15% over two weeks. Find the cause.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Rate defined as cancelled ÷ requests? Rider- or driver-initiated?</li><li>All cities or some? All trip types?</li><li>Any pricing, matching or app changes in the period?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Supply-demand imbalance (events, rain).</li><li>ETA inaccuracy causing rider cancellations.</li><li>Driver economics: short trips, long pickups, unattractive destinations.</li><li>App change exposing new information at a new moment.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Driver-initiated cancellations explain most of the rise.</li><li>They cluster after the driver sees the drop-off location.</li><li>A product change two weeks ago added a &#x27;trip details&#x27; screen that shows drivers the destination right after they accept.</li><li>Long airport-bound trips from city edges see the highest cancellations.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Split by canceller → drivers drive the increase.</li><li>Split by timing → after acceptance, when trip details appear.</li><li>Correlate with release → new trip-details screen shows destination after acceptance.</li><li>Segment by trip → long pickups and out-of-zone drop-offs most affected.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A new screen shows drivers the destination after they accept; drivers now cancel trips they find unattractive, which they previously completed.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Short term: revert the timing or add a small fee for post-accept cancellations.</li><li>Longer term: fix economics of unattractive trips (return-trip bonus, long-pickup pay) rather than hiding information.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Driver post-accept cancellation rate, rider wait time, completed trips per hour.</li><li>Guardrails: driver earnings, rider complaints, fairness across areas.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Model behavioural impact of exposing new information; launch with holdouts.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Treating cancellation as a single metric instead of splitting by who and when.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>The rise was driver cancellations right after accepting, when a new screen revealed the destination. Drivers dropped trips they found unattractive. Revert the timing now, then fix the underlying trip economics and measure post-accept cancellations, wait times and driver earnings.</p></div>
+</section><section class="rcaq"><h2>Q4 · Payment success rate fell from 95% to 91%</h2>
+<p class="meta-line"><b>Payments gateway (Razorpay/Stripe-style)</b> · Metric: Payment success rate · Hard</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Payment success rate for merchants dropped from 95% to 91% yesterday afternoon. Diagnose.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Success = successful ÷ attempted? Excluding user-abandoned?</li><li>All merchants or some? All methods?</li><li>Sudden or gradual? Still ongoing?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Our deploy or config change.</li><li>Partner outage (bank, card network, UPI switch).</li><li>Fraud rule change blocking legitimate payments.</li><li>Merchant integration issue.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Cards and wallets are normal; UPI success fell from 96% to 84%.</li><li>Failures are concentrated on two large issuer banks.</li><li>Error codes are mostly timeouts from the bank side.</li><li>No deploy on our side; one bank posted a maintenance notice late.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Split by method → UPI only.</li><li>Split by issuer → two banks.</li><li>Error codes → bank-side timeouts.</li><li>Check deploys and partner status → bank maintenance window.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>Unannounced maintenance at two large issuer banks caused UPI timeouts; our system kept routing those transactions without fallback.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Route around unhealthy banks where possible; suggest alternate methods to customers; clear status-page communication to merchants.</li><li>Ensure idempotent retries so customers aren&#x27;t double charged.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Success rate by method and issuer, timeout rate, duplicate-charge reports.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Real-time issuer health monitoring with automatic routing and alerts; partner escalation contacts.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Assuming our code broke before checking partners.</li><li>Ignoring duplicate charges during recovery.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Breaking the rate down showed only UPI failed, for two banks, with bank-side timeouts and no deploy from us. A bank maintenance window was the cause. Route around unhealthy banks, guide customers to other methods, keep retries idempotent, and build issuer-health monitoring with automatic routing.</p></div>
+</section><section class="rcaq"><h2>Q5 · Credit-card application completions down 20%</h2>
+<p class="meta-line"><b>Card issuer (American Express-style)</b> · Metric: Applications submitted ÷ started · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Digital credit-card application completions dropped 20% this month. Find out why.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Is it completions in count or completion rate?</li><li>Which channels, devices and steps?</li><li>Any form, policy or vendor changes?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Form or KYC vendor change.</li><li>Mix shift from new acquisition channel.</li><li>Eligibility or credit policy change.</li><li>Technical bug on a device.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Starts are up 30% thanks to a new paid-social campaign.</li><li>Completion rate is down for new paid-social traffic only; organic users are normal.</li><li>Paid-social applicants abandon at the income and document step.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Split rate vs volume → rate down, volume up.</li><li>Split by channel → only new paid-social traffic converts poorly.</li><li>Funnel by step → those users drop at income/documents, suggesting lower eligibility or intent.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>Mix shift: a new paid-social campaign brought many lower-intent or ineligible applicants who abandon at the income and document step. The product itself is not broken.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Retarget the campaign; add a pre-eligibility check before the long form.</li><li>Judge channels on approved and activated accounts, not starts.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Completion and approval rate by channel; cost per approved account.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Report funnel metrics segmented by acquisition channel by default.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Redesigning the form when the traffic changed, not the product.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Starts rose 30% from a new paid-social campaign, but only those users completed less, dropping at income and documents. It&#x27;s a mix shift, not a product bug. Retarget the campaign, add a pre-eligibility step, and measure channels by approved, activated accounts.</p></div>
+</section><section class="rcaq"><h2>Q6 · Daily active users down 8% on a social app</h2>
+<p class="meta-line"><b>Social media app</b> · Metric: DAU · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>DAU fell 8% over the past week. Leadership wants to know why.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>How is &#x27;active&#x27; defined? Same definition as before?</li><li>Which platforms, regions, cohorts?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Seasonality or holiday.</li><li>Notification delivery issue.</li><li>Feed quality or ranking change.</li><li>Competitor launch.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>New user sign-ups are flat; returning user DAU is down.</li><li>Push notification open rate fell sharply.</li><li>Android 14 users received far fewer notifications after an OS permission change was handled incorrectly in our latest release.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Decompose DAU → returning users down.</li><li>Main entry point for returning users is notifications → open rate dropped.</li><li>Split by OS version → Android 14 deliveries down after release.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>The latest release mishandled the Android notification-permission prompt, so many Android 14 users stopped receiving notifications and opened the app less.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Hotfix the permission flow; re-request permission in context with a clear reason.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Notification delivery and open rate by OS version; returning DAU.</li><li>Guardrails: opt-out rate, uninstalls.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Monitor notification delivery by OS version as a release health metric.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Blaming content or competitors without decomposing DAU.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Returning users fell, not new ones. Their main trigger, notifications, collapsed on Android 14 after our release mishandled the permission prompt. Hotfix and re-ask permission in context, and add notification delivery by OS version to release monitoring.</p></div>
+</section><section class="rcaq"><h2>Q7 · Streaming watch time down 12%</h2>
+<p class="meta-line"><b>Video streaming (Netflix-style)</b> · Metric: Hours watched per member · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Average weekly watch time per member fell 12% month over month. Diagnose.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Per member or total? Same comparison period?</li><li>Any playback, quality or app changes?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Content seasonality.</li><li>Playback quality issues causing early exits.</li><li>Recommendation change.</li><li>Competitor content.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Sessions per member are steady; average session length fell.</li><li>Last month had the finale of a very popular series; this month has no big release.</li><li>Drop is across all regions and devices.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Uniform across segments → not a device or region bug.</li><li>Shorter sessions, not fewer → users still come back.</li><li>Compare with content calendar → last month had a major finale.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>Natural seasonality: last month&#x27;s spike from a major series finale inflated the baseline; this month returns to normal levels.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>No product fix needed; compare against a seasonally adjusted baseline or same period last year.</li><li>Consider surfacing back-catalogue recommendations after big finales.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Watch time vs seasonal baseline; churn among finale watchers.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Annotate dashboards with content releases.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Inventing a bug when the baseline was unusually high.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>The drop is uniform and session counts are steady, only length fell. Last month had a huge finale that inflated the baseline. This is seasonality; compare against a seasonal baseline and use the moment to promote back-catalogue titles.</p></div>
+</section><section class="rcaq"><h2>Q8 · App store rating dropped from 4.5 to 3.9</h2>
+<p class="meta-line"><b>Fintech app</b> · Metric: Average store rating · Easy</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>The app&#x27;s rating dropped from 4.5 to 3.9 in two weeks. Why?</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Which stores? Which versions? How many new reviews?</li><li>Did we change in-app rating prompts?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Bug in a release.</li><li>Fee or policy change.</li><li>Change in who is prompted to rate.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Most new 1-star reviews mention being logged out repeatedly.</li><li>They started after version 6.2, which changed session handling.</li><li>Crash rate is normal.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Tag reviews → logouts dominate.</li><li>Correlate with version → started at 6.2.</li><li>Release notes → session-timeout change.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>Version 6.2 shortened session timeouts, forcing frequent re-logins and frustrating users.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Restore a reasonable timeout with biometric re-authentication; respond to reviewers once fixed.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Login events per user, rating trend, review themes.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Track re-authentication frequency as a release metric; involve security and UX together.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Responding to reviews without diagnosing the cause.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Tagging the reviews showed repeated logouts starting with version 6.2, which shortened session timeouts. Restore a sensible timeout with biometric re-login, reply to reviewers, and track re-login frequency per release.</p></div>
+</section><section class="rcaq"><h2>Q9 · Search-to-purchase conversion down 9%</h2>
+<p class="meta-line"><b>E-commerce search</b> · Metric: Purchases from search ÷ searches · Hard</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Conversion from search to purchase fell 9% over a week. Diagnose.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Conversion per search or per searcher? Same window?</li><li>Which languages, categories, platforms?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Ranking or index change.</li><li>Catalogue gaps (out of stock).</li><li>Price changes.</li><li>Language or spelling handling.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Search volume is flat. Click-through on results fell; zero-result searches doubled.</li><li>Zero-result queries are mostly in Hindi and Hinglish.</li><li>A new tokenizer was deployed to the search service last Tuesday.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Search volume flat, CTR down → results got worse.</li><li>Zero-result rate doubled → index or query processing.</li><li>Segment by language → Hindi/Hinglish.</li><li>Correlate with deploy → new tokenizer.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A new tokenizer broke handling of Hindi and transliterated queries, returning zero or poor results.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Roll back the tokenizer for those languages; add multilingual test queries.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Zero-result rate, CTR and conversion by language.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Offline search evaluation set covering languages and spelling variants before every ranking deploy.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Looking only at overall conversion, not intermediate funnel metrics like CTR and zero-results.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Searches were flat but click-through fell and zero-result searches doubled, mostly for Hindi and Hinglish queries, right after a tokenizer deploy. Roll it back for those languages and require a multilingual evaluation set before search changes.</p></div>
+</section><section class="rcaq"><h2>Q10 · Revenue down while DAU is up</h2>
+<p class="meta-line"><b>Freemium productivity app</b> · Metric: Monthly revenue · Hard</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>DAU grew 10% this month but subscription revenue fell 5%. Explain.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Revenue recognised or billed? Gross or net of refunds?</li><li>Which plans and regions?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Mix shift to free users.</li><li>Payment failures (involuntary churn).</li><li>Price or discount changes.</li><li>Refunds.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>New users are mostly from a student promotion and are on the free tier.</li><li>Existing paid users: renewal failures rose because card payments failed after a billing provider change.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Decompose → payer conversion down (mix shift), and revenue per payer down.</li><li>Renewal failure rate up → billing provider change broke card-on-file renewals.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>Two causes: a student promotion added many free users (diluting conversion, which is fine), and a billing-provider migration broke card renewals (involuntary churn, which is not).</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Fix renewal billing; run dunning (retries, card update emails) for failed renewals.</li><li>Report free and paid cohorts separately.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Renewal success rate, involuntary churn, revenue per payer.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Migration checklists with shadow billing runs before cut-over.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Stopping at the first explanation (mix shift) and missing the payment bug.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Revenue = users × payer rate × revenue per payer. DAU rose from free student sign-ups, which is expected dilution. But renewals were also failing after a billing-provider migration. Fix renewals and run dunning, and always look for a second cause.</p></div>
+</section><section class="rcaq"><h2>Q11 · Average order value down 7%</h2>
+<p class="meta-line"><b>Quick commerce (Blinkit-style)</b> · Metric: AOV · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Average order value fell 7% this month. Investigate.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>AOV including fees and discounts? Same definition?</li><li>Which cities and categories?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Threshold or fee change.</li><li>Category mix shift.</li><li>Discounting.</li><li>Recommendation module broken.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Price per item is flat; items per order fell.</li><li>Free-delivery threshold was lowered from ₹199 to ₹99 two weeks ago.</li><li>Order count rose 12%.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Decompose AOV → items per order down.</li><li>Check pricing changes → lower free-delivery threshold.</li><li>Order count up → users split baskets into smaller, more frequent orders.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>Lowering the free-delivery threshold let users place smaller, more frequent orders. AOV fell but order count rose.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Decide on contribution margin, not AOV: if delivery cost per order now exceeds gains, adjust the threshold.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Contribution margin per order and per user, order frequency, delivery cost.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Evaluate fee changes on unit economics and total GMV per user, not one metric.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Calling lower AOV a problem without checking total revenue and margin.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>AOV dropped because items per order fell after the free-delivery threshold was lowered. Orders went up 12%. Whether this is bad depends on contribution margin per user, so judge the change on unit economics, not AOV alone.</p></div>
+</section><section class="rcaq"><h2>Q12 · Sign-ups down 30% overnight</h2>
+<p class="meta-line"><b>Consumer app</b> · Metric: New sign-ups · Easy</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>New sign-ups fell 30% overnight. What do you check?</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Sign-ups started or completed? All platforms?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Tracking break.</li><li>Sign-up flow bug.</li><li>OTP/SMS delivery failure.</li><li>Acquisition campaign paused.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Installs are normal.</li><li>OTP delivery success fell from 98% to 70%.</li><li>The SMS provider had an incident in one region.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Installs normal → acquisition is fine.</li><li>Funnel → users stuck at OTP verification.</li><li>OTP delivery down → SMS provider incident.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>An SMS provider incident stopped OTP delivery in one region, blocking sign-up completion.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Fail over to a secondary SMS provider; offer voice OTP or email fallback.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>OTP delivery rate by provider and region; sign-up completion.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Multi-provider OTP with automatic failover and alerts.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Pausing marketing spend before checking the funnel.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Installs were normal but users got stuck at OTP verification because an SMS provider failed in one region. Fail over to a backup provider, add voice or email fallback, and alert on OTP delivery by provider.</p></div>
+</section><section class="rcaq"><h2>Q13 · Support tickets doubled after a release</h2>
+<p class="meta-line"><b>SaaS project-management tool</b> · Metric: Support tickets per 1,000 users · Easy</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Support tickets doubled in the week after a release. Diagnose.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Which ticket categories? All customer segments?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Bug.</li><li>Discoverability problem from UI change.</li><li>Pricing change.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Most tickets ask where the export button went.</li><li>The redesign moved export into a new &#x27;More&#x27; menu.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Tag tickets → &#x27;can&#x27;t find export&#x27; dominates.</li><li>Release notes → export moved into overflow menu.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A redesign hid a frequently used action, creating a discoverability problem rather than a bug.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Restore export as a visible action or add an in-app pointer; update help articles.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Ticket volume by theme, export usage.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Usability-test redesigns on top tasks; check feature usage before moving controls.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Treating tickets as noise because nothing is &#x27;broken&#x27;.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Tickets doubled mainly because users couldn&#x27;t find export after the redesign moved it into a menu. Make export visible again, add a pointer and help update, and usability-test top tasks before moving controls.</p></div>
+</section><section class="rcaq"><h2>Q14 · Checkout conversion spiked 20%</h2>
+<p class="meta-line"><b>E-commerce</b> · Metric: Checkout conversion · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Checkout conversion jumped 20% overnight. Celebrate or investigate?</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Is the numerator or denominator driving it?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Real improvement (promo, UX).</li><li>Denominator dropped (tracking or bot filter).</li><li>Mix shift.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Orders didn&#x27;t change; checkout starts fell.</li><li>A tracking change stopped firing checkout_start for guest users.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Numerator (orders) flat → no real gain.</li><li>Denominator down → checkout_start events missing.</li><li>Tracking release → guest event broken.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A tracking bug stopped logging checkout starts for guest users, shrinking the denominator and inflating conversion.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Fix the event; annotate the dashboard; restate affected numbers.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Reconcile events with backend order and session data.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Automated checks comparing event counts with backend counts.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Celebrating before checking numerator and denominator separately.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Orders were flat; checkout starts dropped because guest checkout_start events stopped firing. The &#x27;improvement&#x27; was a tracking bug. Fix the event, restate numbers, and reconcile analytics with backend counts automatically.</p></div>
+</section><section class="rcaq"><h2>Q15 · Delivery times up 6 minutes</h2>
+<p class="meta-line"><b>Food delivery</b> · Metric: Average delivery time · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Average delivery time increased by six minutes this week. Why?</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Mean or median? All cities?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Traffic or weather.</li><li>Rider shortage.</li><li>Restaurant prep delays.</li><li>Dispatch algorithm change.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Rider travel time is unchanged.</li><li>Time waiting at restaurants rose.</li><li>A new &#x27;restaurant ready&#x27; estimate went live, assigning riders earlier.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Decompose: prep + wait + travel.</li><li>Wait at restaurant up; travel flat.</li><li>New dispatch model assigns riders too early, so they queue at restaurants and lose other trips.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A dispatch change assigned riders too early, so they waited at restaurants instead of delivering other orders, increasing overall delivery times.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Roll back or recalibrate the ready-time model with live kitchen load.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Rider wait time at restaurant, delivery time p50/p90, orders per rider-hour.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Launch dispatch changes as switchback experiments with time and efficiency guardrails.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Blaming traffic without decomposing the delivery stages.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Travel was unchanged but riders waited longer at restaurants after a new readiness model assigned them too early. Recalibrate with live kitchen load and test dispatch changes with switchback experiments.</p></div>
+</section><section class="rcaq"><h2>Q16 · Email open rate halved</h2>
+<p class="meta-line"><b>B2C newsletter or lifecycle email</b> · Metric: Open rate · Easy</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Open rate on lifecycle emails fell from 40% to 20%. Diagnose.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Open rate measured how? All email clients?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Spam-folder deliverability problem.</li><li>Subject line change.</li><li>Measurement change (privacy features).</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Click-through rate per delivered email is unchanged.</li><li>Apple Mail users show the drop; a privacy change altered open tracking.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Clicks steady → engagement probably unchanged.</li><li>Split by client → Apple Mail only.</li><li>Measurement changed due to privacy features.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A privacy feature change in one email client altered how opens are counted; real engagement did not fall.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Move success metrics to clicks and conversions; note the change on dashboards.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Click-through, conversions per send, unsubscribe rate.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Prefer robust downstream metrics over opens.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Rewriting emails because of a measurement artefact.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Clicks were steady and only one email client showed the drop, after a privacy change affected open tracking. Engagement didn&#x27;t fall; switch to clicks and conversions as the primary metrics.</p></div>
+</section><section class="rcaq"><h2>Q17 · Seller listings down 18%</h2>
+<p class="meta-line"><b>Marketplace (seller side)</b> · Metric: New listings per day · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>New product listings by sellers dropped 18% in two weeks. Investigate.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Which categories and seller sizes?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Seller churn.</li><li>Listing tool bug.</li><li>Policy or form change.</li><li>Seasonality.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Active sellers are steady; listings per seller fell.</li><li>A new mandatory field (HSN tax code) was added to the listing form.</li><li>Listing form abandonment doubled at that field.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Sellers steady, listings per seller down.</li><li>Form funnel → abandonment at new mandatory field.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A new mandatory tax field confused small sellers, who abandoned listings.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Auto-suggest the code from category; allow saving drafts; add help text.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Form completion rate, listings per seller, time to list.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Test form changes with small sellers; roll out gradually.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Assuming sellers are leaving the platform.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Sellers didn&#x27;t leave; they abandoned listings at a new mandatory tax-code field. Auto-suggest the code, allow drafts, and test form changes with small sellers first.</p></div>
+</section><section class="rcaq"><h2>Q18 · AI assistant escalations up 40%</h2>
+<p class="meta-line"><b>AI customer-support assistant (fintech)</b> · Metric: Escalation to human rate · Hard</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>The share of AI support chats escalated to human agents rose from 25% to 35% this week. Diagnose.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Escalation by user request or by assistant? All intents?</li><li>Any model, prompt or knowledge-base change?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Model or prompt change.</li><li>Retrieval returning stale or no documents.</li><li>New question types (product launch).</li><li>Bug in handoff logic.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>The increase is concentrated in fee-related questions.</li><li>A new fee schedule was published but the knowledge base was not re-indexed.</li><li>The assistant says &#x27;I&#x27;m not sure&#x27; and escalates more on fee questions.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Split by intent → fee questions.</li><li>Check retrieval → no current fee document found.</li><li>KB pipeline → new schedule not re-indexed.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>The fee schedule changed but the retrieval index was not refreshed, so the assistant couldn&#x27;t find current fee information and correctly escalated.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Re-index; add policy-owner workflow that triggers re-indexing on publication.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Escalation rate by intent, retrieval hit rate, answer accuracy on eval set.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Freshness monitoring for key documents; run the evaluation set after any knowledge change.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Blaming the model when retrieval data is stale.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Escalations rose for fee questions because a new fee schedule wasn&#x27;t re-indexed, so retrieval found nothing current and the assistant handed off. Re-index, connect publishing to indexing, and monitor document freshness.</p></div>
+</section><section class="rcaq"><h2>Q19 · Week-1 retention fell from 35% to 28%</h2>
+<p class="meta-line"><b>Language-learning app</b> · Metric: Week-1 retention · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Week-1 retention for new users dropped from 35% to 28% over the last three cohorts. Diagnose.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Retention defined as active in days 7–13? All acquisition channels?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Acquisition mix shift.</li><li>Onboarding change.</li><li>Notification issue.</li><li>Content difficulty.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>A new longer placement test was added to onboarding.</li><li>Users who skip or fail the test retain much less.</li><li>Lesson completion on day 1 fell.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Channel mix stable.</li><li>Day-1 activation down.</li><li>New placement test → longer time to first lesson.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A longer onboarding placement test delayed the first lesson and placed some users at too-hard levels, reducing activation and week-1 retention.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Make the test optional or shorter; start with an easy first lesson.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Time to first lesson, day-1 lesson completion, week-1 retention.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>A/B test onboarding changes against activation metrics.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Looking at week-1 retention without examining day-1 activation.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Channel mix was stable but day-1 lesson completion fell after a longer placement test was added to onboarding. Shorten or make it optional, and A/B test onboarding changes on activation.</p></div>
+</section><section class="rcaq"><h2>Q20 · Refund requests up 3x</h2>
+<p class="meta-line"><b>E-commerce fashion</b> · Metric: Refund requests · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Refund requests tripled this week for one category. Investigate.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Which category, sellers and regions?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Quality issue with a seller.</li><li>Wrong product images.</li><li>Size chart change.</li><li>Fraud.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Return reason is mostly &#x27;size doesn&#x27;t fit&#x27;.</li><li>A new size chart format was rolled out for that category.</li><li>One major brand&#x27;s chart used a different standard.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Return reasons → sizing.</li><li>Category change → new size chart format.</li><li>Brand-level split → one brand&#x27;s mapping wrong.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A size-chart migration mapped one major brand&#x27;s sizes incorrectly, so customers ordered the wrong size.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Correct the mapping; notify affected customers; easy exchanges.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Return rate by brand and reason.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Validate catalogue migrations against sample products before launch.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Blaming the seller&#x27;s quality without checking reasons.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Returns were mostly sizing-related after a size-chart migration; one major brand&#x27;s sizes were mapped wrong. Fix the mapping, support exchanges and validate catalogue migrations.</p></div>
+</section><section class="rcaq"><h2>Q21 · Video upload completion down 25%</h2>
+<p class="meta-line"><b>Creator platform (YouTube Shorts-style)</b> · Metric: Uploads completed ÷ started · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Completed uploads from creators fell 25% over five days. Diagnose.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Started vs completed? App or web?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>App bug.</li><li>Upload infrastructure change.</li><li>Policy or copyright checks.</li><li>Network issues.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Failures are on uploads larger than 100 MB.</li><li>A CDN configuration change reduced the upload timeout.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Split by file size → large files fail.</li><li>Infra changes → timeout reduced.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>An infrastructure change reduced upload timeouts, causing large videos to fail.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Restore timeout; use resumable chunked uploads.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Upload success by size band, retries.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Synthetic large-file upload tests after infra changes.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Assuming creators lost motivation.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Only uploads over 100 MB failed after a CDN change shortened timeouts. Restore the timeout, add resumable uploads and test large files after infrastructure changes.</p></div>
+</section><section class="rcaq"><h2>Q22 · Ad click-through rate down 15%</h2>
+<p class="meta-line"><b>Ads platform</b> · Metric: Ad CTR · Hard</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Ad CTR on the feed fell 15% while impressions rose. What happened?</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Which placements, advertisers, devices?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Ad quality drop.</li><li>More impressions at worse positions.</li><li>Bot traffic.</li><li>Tracking issue.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Clicks are flat; impressions rose 18%.</li><li>Ad load per session was increased last week.</li><li>Lower-position ads have low CTR.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Clicks flat, impressions up → denominator effect.</li><li>Ad load change → extra lower-quality slots.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>Increasing ad load added low-position impressions, diluting CTR while clicks stayed flat.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Evaluate on revenue, advertiser ROI and user experience, not CTR alone; tune ad load.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Revenue per session, advertiser conversions, session length, user complaints.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Ad-load experiments with user guardrails.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Treating CTR decline as ad quality decline without checking impressions.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Clicks were flat and impressions rose because ad load increased. CTR diluted mathematically. Judge ad load on revenue, advertiser ROI and user experience guardrails.</p></div>
+</section><section class="rcaq"><h2>Q23 · Group creation down in a community product</h2>
+<p class="meta-line"><b>Community feature (Facebook Groups-style)</b> · Metric: New active groups · Hard</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>New groups created per week fell 20%. Find the cause.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Groups created or groups that become active?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Entry point removed.</li><li>Spam enforcement change.</li><li>Competition.</li><li>Seasonality.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Group creation from the main navigation is unchanged.</li><li>Creation from the &#x27;events&#x27; entry point dropped to near zero after a navigation redesign removed that entry point.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Split by entry point → events entry point vanished.</li><li>Navigation redesign removed it.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A navigation redesign removed a high-volume entry point for creating groups.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Restore or replace the entry point; measure group activation, not just creation.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>Groups created by entry point; groups active after 14 days.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Check traffic per entry point before removing navigation elements.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Ignoring entry-point segmentation.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Creation from main navigation was unchanged; the events entry point disappeared in a redesign. Restore it and measure activation of new groups, not just creation.</p></div>
+</section><section class="rcaq"><h2>Q24 · Time-to-resolution up for B2B support</h2>
+<p class="meta-line"><b>B2B SaaS support</b> · Metric: Median time to resolution · Medium</p>
+<div class="admonition example"><p class="admonition-title">Prompt</p><p>Median support ticket resolution time rose from 6 hours to 11 hours. Diagnose.</p></div>
+<h3>1. Clarifying questions to ask</h3><ul><li>Median or mean? All tiers?</li></ul>
+<h3>2. Hypothesis buckets</h3><ul><li>Higher volume.</li><li>More complex issues.</li><li>Staffing changes.</li><li>Routing changes.</li></ul>
+<div class="admonition hypo"><p class="admonition-title">Interviewer reveals (share only when asked)</p><ul><li>Ticket volume is flat.</li><li>Tickets wait longer before first response.</li><li>A new routing rule sends all enterprise tickets to one small team.</li></ul></div>
+<h3>3. Model investigation path</h3><ol><li>Volume flat → not demand.</li><li>First response time up → queueing.</li><li>Routing rule overloaded one team.</li></ol>
+<div class="admonition tip"><p class="admonition-title">Root cause</p><p>A routing rule concentrated enterprise tickets on a small team, creating a queue.</p></div>
+<div class="canvas" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="cv tone-b"><h5>Fix</h5><ul><li>Rebalance routing; add overflow rules.</li></ul></div>
+<div class="cv tone-g"><h5>Measure recovery</h5><ul><li>First response time, queue length by team, resolution time by tier.</li></ul></div>
+<div class="cv tone-v"><h5>Prevent recurrence</h5><ul><li>Simulate routing changes on historical ticket data.</li></ul></div></div>
+<h3>4. Common mistakes</h3><ul><li>Hiring more agents without fixing routing.</li></ul>
+<div class="admonition abstract"><p class="admonition-title">60-second answer</p><p>Volume was flat but first-response time rose because a routing rule sent all enterprise tickets to one small team. Rebalance routing, add overflow and simulate routing changes beforehand.</p></div>
+</section></div></body></html>
